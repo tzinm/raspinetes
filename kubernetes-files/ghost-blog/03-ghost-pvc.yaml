@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ghost-blog-nfs-pvc
+  namespace: ghost-blog
+spec:
+  storageClassName: storage-nfs
+  selector:
+    matchLabels:
+      volume: ghost-nfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+

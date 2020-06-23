@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost-blog
+  labels:
+    app: ghost
+  namespace: ghost-blog
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      volumes:
+        - name: ghost-blog-volume
+          persistentVolumeClaim:
+            claimName: ghost-blog-nfs-pvc
+      containers:
+        - name: ghost-blog
+          image: ghost
+          imagePullPolicy: Always
+          env:
+          - name: url
+            value: https://zabalnetes.es
+          ports:
+            - name: ghost-port
+              containerPort: 2368
+          volumeMounts:
+           - name: ghost-blog-volume
+             mountPath: "/var/lib/ghost/content"
+          livenessProbe:
+            tcpSocket:
+              port: ghost-port
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 20
+            failureThreshold: 3
+
